@@ -1,0 +1,46 @@
+#include <QApplication>
+#include <QPushButton>
+#include <QTimer>
+#include <QDebug>
+
+class MyWidget : public QWidget {
+    Q_OBJECT
+public:
+    MyWidget(QWidget *parent = nullptr) : QWidget(parent) {
+        cmd_no = 0;
+        QTimer *timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, &MyWidget::checkCmdNo);
+        timer->start(10); // 10ms interval
+
+        QPushButton *button1 = new QPushButton("Button 1", this);
+        QPushButton *button2 = new QPushButton("Button 2", this);
+
+        connect(button1, &QPushButton::clicked, this, &MyWidget::updateCmdNo);
+        connect(button2, &QPushButton::clicked, this, &MyWidget::updateCmdNo);
+    }
+
+public slots:
+    void updateCmdNo() {
+        // Increment cmd_no or reset to 0
+        cmd_no = (cmd_no + 1) % 256; // Assuming cmd_no is a byte (0-255)
+    }
+
+    void checkCmdNo() {
+        if (cmd_no != 0) {
+            qDebug() << "cmd_no changed to" << cmd_no;
+            cmd_no = 0; // Reset cmd_no
+        }
+    }
+
+private:
+    int cmd_no;
+};
+
+int main(int argc, char *argv[]) {
+    QApplication a(argc, argv);
+    MyWidget w;
+    w.show();
+    return a.exec();
+}
+
+#include "main.moc"
