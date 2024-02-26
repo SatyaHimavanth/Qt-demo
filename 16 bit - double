@@ -1,0 +1,47 @@
+#include <iostream>
+#include <bitset>
+
+// Function to convert integer part to binary and store in array
+void convertIntegerPart(int integerPart, unsigned short binaryArray[]) {
+    int index = 0;
+    while (integerPart > 0 && index < 4) {
+        binaryArray[index++] = integerPart % (1 << 16);
+        integerPart /= (1 << 16);
+    }
+}
+
+// Function to convert fractional part to binary and store in array
+void convertFractionalPart(double fractionalPart, unsigned short binaryArray[]) {
+    int index = 0;
+    while (fractionalPart > 0 && index < 4) {
+        fractionalPart *= (1 << 16);
+        unsigned short integerPart = static_cast<unsigned short>(fractionalPart);
+        binaryArray[index++] = integerPart;
+        fractionalPart -= integerPart;
+    }
+}
+
+int main() {
+    double decimalNumber = 12.124580435;
+
+    // Splitting into integer and fractional parts
+    int integerPart = static_cast<int>(decimalNumber);
+    double fractionalPart = decimalNumber - integerPart;
+
+    // Array to store binary representation
+    unsigned short binaryArray[4] = {0};
+
+    // Convert integer part to binary and store in array
+    convertIntegerPart(integerPart, binaryArray);
+
+    // Convert fractional part to binary and store in array
+    convertFractionalPart(fractionalPart, binaryArray + 2);
+
+    // Display binary representation
+    std::cout << "Binary representation stored in array:" << std::endl;
+    for (int i = 0; i < 4; ++i) {
+        std::cout << std::bitset<16>(binaryArray[i]) << std::endl;
+    }
+
+    return 0;
+}
